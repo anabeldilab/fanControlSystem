@@ -1,5 +1,5 @@
 void initializeRelays();
 
-void startRelay();
+void clockwiseRelay();
 void stopRelay();
-void reverseRelay();
+void anticlockwiseRelay();

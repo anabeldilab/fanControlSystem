@@ -14,14 +14,20 @@
 FanMode currentFanMode = AUTO;
 
 const int PWM_PIN = 4;
+const int PWM_CHANNEL = 0; // Canal PWM
+const int FREQ = 10000; // Frecuencia en Hz
+const int PWM_RESOLUTION = 8; // Resolución en bits (máximo 16 bits)
 
-float temperature = 0.0;
+float temperaturePercentage = 0.0;
 float pricePercentage = 0.0;
+
+bool clockwise = true;
 
 
 void initializePWM() {
-  pinMode(PWM_PIN, OUTPUT);
-  setFanSpeed(0);
+  ledcAttachPin(PWM_PIN, PWM_CHANNEL);
+  ledcSetup(PWM_CHANNEL, FREQ, PWM_RESOLUTION);
+  setFanSpeed(50);
 }
 
 
@@ -37,7 +43,7 @@ bool isCurrentFanModeManual() {
 
 void setFanSpeed(int speedPercentege) {
   float duty = speedPercentege * 255 / 100;
-  analogWrite(PWM_PIN, duty);
+  ledcWrite(PWM_CHANNEL, duty);
 }
 
 
@@ -49,8 +55,6 @@ void setFanMode(FanMode mode) {
 void setFanSpeedManual(int speed) {
   if (currentFanMode == MANUAL) {
     setFanSpeed(speed);
-    Serial.print("Manual fan speed set to: ");
-    Serial.println(speed);
   }
 }
 
@@ -61,23 +65,16 @@ void handleFanControl() {
       pricePercentage = getCurrentPricePercentage();
       updateLastHourChecked();
     }
-    float temperature = getTemperature();
-    float fanSpeed = fuzzyLogic(temperature, pricePercentage);
+    temperaturePercentage = getTemperaturePercentage();
+    float fanSpeed = meanLogic(temperaturePercentage, pricePercentage);
 
     Serial.print("Temperature: ");
-    Serial.print(temperature);
+    Serial.print(temperaturePercentage);
     Serial.print(" °C, Price percentage: ");
     Serial.print(pricePercentage);
     Serial.print("%, Fuzzy result: ");
     Serial.println(fanSpeed);
 
-    if (fanSpeed < 10) {
-      turnFanOff();
-    } else if (fanSpeed > 90) {
-      fanSpeed = 90;
-    } else {
-      turnFanOn();
-    }
     setFanSpeed(fanSpeed);
   }
 }
@@ -86,17 +83,19 @@ void handleFanControl() {
 
 void turnFanOff() {
   stopRelay();
-  Serial.println("Fan turned off");
 }
 
 
 void turnFanOn() {
-  startRelay();
-  Serial.println("Fan turned on");
+  if (clockwise) {
+    clockwiseRelay();
+  } else {
+    anticlockwiseRelay();
+  }
 }
 
 
 void changeFanDirection() {
-  reverseRelay();
-  Serial.println("Fan direction changed");
+  clockwise = !clockwise;
+  turnFanOn();
 }

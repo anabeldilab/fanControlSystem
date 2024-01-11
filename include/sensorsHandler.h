@@ -7,6 +7,8 @@ void useMocksTemperature(bool useMocks);
 
 float setMockTemperature(float temperature);
 float getTemperature();
+float getTemperaturePercentage();
+
 float getHumidity();
 
 void calculateRPM();

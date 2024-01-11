@@ -20,7 +20,7 @@ int pulseCount = 0;
 
 void IRAM_ATTR isr() {
   pulseCount++;
-  delayMicroseconds(10);
+  delayMicroseconds(5);
 }
 
 
@@ -59,6 +59,26 @@ float getTemperature() {
 }
 
 
+float getTemperaturePercentage() {
+  float temperature = getTemperature();
+  float temperatureMin = 20;
+  float temperatureMax = 35;
+  if (temperature < 0) {
+    return -1.0;
+  }
+  if (temperature < 20) {
+    return 0.0;
+  } else if (temperature > 35) {
+    return 100.0;
+  } else {
+    return (temperature - temperatureMin) / (temperatureMax - temperatureMin) * 100;
+  }
+
+
+}
+
+
+
 float getHumidity() {
   float humidity = dhtSensor.readHumidity();
   if (isnan(humidity)) {
@@ -72,13 +92,8 @@ float getHumidity() {
 void calculateRPM() {
   unsigned long currentTime = micros();
   unsigned long elapsedTime = currentTime - previousTime;
-  Serial.print(elapsedTime / 1000000);
-  
-   // Calculate RPM (Revolutions Per Minute) and reset the counter
+  // Calculate RPM (Revolutions Per Minute) and reset the counter
   rpm = ((pulseCount / 2) * 60000000) / (elapsedTime);
-
-  Serial.print("RPM: ");
-  Serial.println(rpm);
 
   previousTime = currentTime;
   pulseCount = 0;  // Reset the counter

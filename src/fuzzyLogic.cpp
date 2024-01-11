@@ -103,17 +103,16 @@ void initializeFuzzyLogic() {
 }
 
 
-
-float fuzzyLogic(float currentTemperature, float currentLightPrice) {
-  Serial.println("Fuzzy Logic");
-  Serial.print("Temperature: ");
-  Serial.println(currentTemperature);
-  Serial.print("Light Price: ");
-  Serial.println(currentLightPrice);
+float fuzzyLogic(float currentTemperature, float currentLightPricePercentage) {
   fuzzy->setInput(1, currentTemperature);
-  fuzzy->setInput(2, currentLightPrice);
+  fuzzy->setInput(2, currentLightPricePercentage);
   fuzzy->fuzzify();
 
   float speedFan = fuzzy->defuzzify(1);
+  return speedFan;
+}
+
+float meanLogic(float currentTemperaturePercentage, float currentLightPricePercentage) {
+  float speedFan = (currentTemperaturePercentage + currentLightPricePercentage) / 2;
   return speedFan;
 }

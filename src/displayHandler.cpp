@@ -15,7 +15,7 @@ void updateLCDdisplay() {
   lcd.setCursor(0, 0);
   lcd.print("Temp:");
   lcd.print(int(getTemperature()));
-  lcd.print("Cº");
+  lcd.print("C");
   lcd.print(" Hum:");
   lcd.print(int(getHumidity()));
   lcd.print("%");

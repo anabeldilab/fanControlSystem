@@ -1,9 +1,12 @@
 #include <Arduino.h>
 
+#include "../include/relayHandler.h"
+
 const int RELAY_K1_PIN = 14;
 const int RELAY_K2_PIN = 27;
 const int RELAY_K3_PIN = 16;
 const int RELAY_K4_PIN = 17;
+
 
 void initializeRelays() {
   pinMode(RELAY_K1_PIN, OUTPUT);
@@ -18,7 +21,9 @@ void initializeRelays() {
   digitalWrite(RELAY_K4_PIN, HIGH);
 }
 
-void startRelay() {
+void clockwiseRelay() {
+  digitalWrite(RELAY_K2_PIN, HIGH);  // STOP FAN OFF
+  delay(200);
   digitalWrite(RELAY_K4_PIN, LOW);
   delay(200);
   digitalWrite(RELAY_K4_PIN, HIGH);
@@ -26,11 +31,11 @@ void startRelay() {
 
 void stopRelay() {
   digitalWrite(RELAY_K2_PIN, LOW);
-  delay(200);
-  digitalWrite(RELAY_K2_PIN, HIGH);
 }
 
-void reverseRelay() {
+void anticlockwiseRelay() {
+  digitalWrite(RELAY_K2_PIN, HIGH);  // STOP FAN OFF
+  delay(200);
   digitalWrite(RELAY_K3_PIN, LOW);
   delay(200);
   digitalWrite(RELAY_K3_PIN, HIGH);

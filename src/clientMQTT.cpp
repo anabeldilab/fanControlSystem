@@ -51,13 +51,13 @@ String convertPayloadToString(byte *payload, unsigned int length) {
 
 
 void callback(char *topic, byte *payload, unsigned int length) {
-  Serial.print("Topic: ");
-  Serial.println(topic);
+  //Serial.print("Topic: ");
+  //Serial.println(topic);
   String message = convertPayloadToString(payload, length);
-  Serial.print("Message: ");
-  Serial.println(message);
-  Serial.print("Manual mode?: ");
-  Serial.println(isCurrentFanModeManual());
+  //Serial.print("Message: ");
+  //Serial.println(message);
+  //Serial.print("Manual mode?: ");
+  //Serial.println(isCurrentFanModeManual());
 
   if (strcmp(topic, fanModeControl_topic) == 0) {
     if (message == "auto") {
@@ -66,7 +66,6 @@ void callback(char *topic, byte *payload, unsigned int length) {
       setFanMode(MANUAL);
     }
   } else if (strcmp(topic, fanControl_topic) == 0) {
-    Serial.println("Entré en el control");
     if (message == "on") {
       turnFanOn();
     } else if (message == "off") {
@@ -75,16 +74,12 @@ void callback(char *topic, byte *payload, unsigned int length) {
       changeFanDirection();
     }
   } else if (strcmp(topic, fanSpeedControl_topic) == 0) {
-    Serial.println("Entré a la velocidad");
     setFanSpeedManual(message.toInt());
   } else if (strcmp(topic, mockTemperature_topic) == 0) {
-    Serial.println("Entré en mockear temperatura");
     mockTemperature = message.toFloat();
   } else if (strcmp(topic, mockLightPrice_topic) == 0) {
-    Serial.println("Entré en mockear precio");
     setMockLightPrice(message.toFloat());
   } else if (strcmp(topic, useMocks_topic) == 0) {
-    Serial.println("Entré en usar mocks");
     if (message == "true") {
       useMocksTemperature(true);
       useMocksLightPrice(true);
@@ -102,8 +97,6 @@ void publishLightPriceData(float price) {
   }
   String priceStr = String(price, 2);  // Convert float to string with 2 decimal places
   MQTTClient.publish(lightPriceData_topic, priceStr.c_str());
-  Serial.println("Light Price Data Published: " + priceStr);
-  Serial.println("Topic: " + String(lightPriceData_topic));
 }
 
 
@@ -112,8 +105,6 @@ void publishRPMData(int rpm) {
     establishMQTTConnection();
   }
   MQTTClient.publish(rpmData_topic, String(rpm).c_str());
-  Serial.println("RPM Data Published: " + rpm);
-  Serial.println("Topic: " + String(rpmData_topic));
 }
 
 
@@ -123,8 +114,6 @@ void publishTemperatureData(float temperature) {
   }
   String temperatureStr = String(temperature, 2);
   MQTTClient.publish(temperatureData_topic, temperatureStr.c_str());
-  Serial.println("Temperature Data Published: " + temperatureStr);
-  Serial.println("Topic: " + String(temperatureData_topic));
 }
 
 

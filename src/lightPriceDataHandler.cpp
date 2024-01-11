@@ -86,11 +86,7 @@ float getMinLightPrice() {
 float getCurrentPricePercentage() {
   float currentLightPrice = getCurrentLightPrice();
   float maxLightPrice = getMaxLightPrice();
-  Serial.print("Max Light Price: ");
-  Serial.println(maxLightPrice);
   float minLightPrice = getMinLightPrice();
-  Serial.print("Min Light Price: ");
-  Serial.println(minLightPrice);
   if (currentLightPrice < 0 || maxLightPrice < 0 || minLightPrice < 0) {
     return -1.0;
   }

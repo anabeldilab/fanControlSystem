@@ -5,8 +5,8 @@
 
 #include "../include/networkHandler.h"
 
-const char* wifiSSID = "Redmi Note 12 Pro 5G";
-const char* wifiPassword = "sonawifi";
+const char* wifiSSID = "etxebe";
+const char* wifiPassword = "etxeberetxe";
 
 unsigned long wifiConnectStartMillis = 0;
 const unsigned long wifiConnectTimeout = 10000;

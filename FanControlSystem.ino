@@ -89,27 +89,3 @@ void loop() {
   }
   delay(200);
 }
-
-
-int terminalRead() {
-  int convertion;
-  String incomingString = "";
-  incomingString = Serial.readString();
-    
-  if (incomingString.length() >= 1) {
-    incomingString.remove(incomingString.length() - 1);
-    
-    Serial.print("I received: ");
-    Serial.println(incomingString);
-  }
-  convertion = incomingString.toInt();
-  Serial.print("Convertion: ");
-  Serial.println(convertion);
-  if (convertion > 10) {
-    convertion = 10;
-  }  else if (convertion < 0) {
-    convertion = 0;
-  }
-
-  return convertion;
-}
