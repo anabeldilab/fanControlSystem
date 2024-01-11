@@ -17,43 +17,99 @@
  * 
 */
 
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 #include <time.h>
+#include <DHT.h>
+#include <PubSubClient.h>
+#include <Fuzzy.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
 #include "include/networkHandler.h"
 #include "include/lightPriceDataHandler.h"
 #include "include/timeManagement.h"
+#include "include/sensorsHandler.h"
+#include "include/clientMQTT.h"
+#include "include/fuzzyLogic.h"
+#include "include/fanControlHandler.h"
+#include "include/relayHandler.h"
+#include "include/displayHandler.h"
+
 
 void setup() {
-  Serial.begin(115200); 
-  connectWifi();
+  Serial.begin(115200);
+  initializeWifiConnection();
+  initializeMQTTConnection();
   syncTime();
+
+  initializeRelays();
+  
+  initializePWM();
+  initializeDHTSensor();
+  initializeSpeedSensor();
+
+  initializeFuzzyLogic();
+  initializeLCDdisplay();
 }
 
 void loop() {
-  static String lastHourChecked = "";
-  static float lastPrice = -1.0;
+  static int serialNumber = 0;
+  unsigned long now = millis();
+  static unsigned long lastMsg = 0;
+  static unsigned long lastFrame = 0;
+  static unsigned long lastControl = 0;
 
-  String currentHour = getCurrentHour(); 
-  Serial.print("Current hour: ");
-  Serial.println(currentHour);
-  Serial.print("Last hour checked: ");
-  Serial.println(lastHourChecked);
+  checkWifiConnection();
+  handleMQTTLoop();
 
-  if (lastHourChecked != currentHour) {
-    String jsonResponse = httpGETRequest(currentLightPriceUrl);
-    //Serial.println(jsonResponse);
-
-    float parsedLightPrice  = fetchLightPrice(jsonResponse);
-    if (parsedLightPrice  > 0) {
-      lastPrice = parsedLightPrice;
-      lastHourChecked = currentHour;
-    }
+  if (now - lastMsg > 10000) {
+    lastMsg = now;
+    Serial.println("Publicando datos...");
+    publishLightPriceData(getCurrentLightPrice());
+    publishTemperatureData(getTemperature());
+    publishRPMData(getRPM());
   }
-  printLightPrice(lastPrice);
     
-  delay(5000);
+  if (now - lastFrame > 1000) {
+    lastFrame = now;
+    calculateRPM();
+    updateLCDdisplay();
+  }
+
+
+  if (now - lastControl > 10000) {
+    lastControl = now;
+    Serial.print("¿Modo Auto?: ");
+    Serial.println(isCurrentFanModeAuto());
+
+    handleFanControl();
+  }
+  delay(200);
+}
+
+
+int terminalRead() {
+  int convertion;
+  String incomingString = "";
+  incomingString = Serial.readString();
+    
+  if (incomingString.length() >= 1) {
+    incomingString.remove(incomingString.length() - 1);
+    
+    Serial.print("I received: ");
+    Serial.println(incomingString);
+  }
+  convertion = incomingString.toInt();
+  Serial.print("Convertion: ");
+  Serial.println(convertion);
+  if (convertion > 10) {
+    convertion = 10;
+  }  else if (convertion < 0) {
+    convertion = 0;
+  }
+
+  return convertion;
 }

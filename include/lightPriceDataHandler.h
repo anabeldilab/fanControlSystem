@@ -6,20 +6,20 @@
  * including fetching the price from an API and printing it.
  */
 
-// URL of the API providing current light price data.
-const String currentLightPriceUrl = "https://api.preciodelaluz.org/v1/prices/now?zone=PCB";
+extern bool useLightMocks;
 
-/**
- * @brief Fetches the light price from a JSON response.
- * 
- * @param jsonResponse The JSON string containing the light price.
- * @return The extracted light price as a float. Returns -1.0 if parsing fails.
- */
 float fetchLightPrice(const String& jsonResponse);
 
-/**
- * @brief Prints the current light price to the Serial monitor.
- * 
- * @param price The light price to be printed.
- */
+float getCurrentLightPrice();
+
+float getMaxLightPrice();
+
+float getMinLightPrice();
+
+float getCurrentPricePercentage();
+
+void setMockLightPrice(float price);
+
+void useMocksLightPrice(bool useMocks);
+
 void printLightPrice(float price);

@@ -1,34 +1,62 @@
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
 #include "../include/networkHandler.h"
 
-const char* ssid = "Redmi Note 12 Pro 5G";
-const char* password = "sonawifi"; 
+const char* wifiSSID = "Redmi Note 12 Pro 5G";
+const char* wifiPassword = "sonawifi";
 
-void connectWifi() {
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi...");
+unsigned long wifiConnectStartMillis = 0;
+const unsigned long wifiConnectTimeout = 10000;
+
+
+void initializeWifiConnection() {
+  static long last_millis = 0;
+  bool connected = false;
+  while (!connected) {
+    unsigned long now = millis();
+    WiFi.begin(wifiSSID, wifiPassword);
+    while (WiFi.status() != WL_CONNECTED && now - last_millis < 5000) {
+      now = millis();
+      delay(500);
+      Serial.print(".");
+    }
+    last_millis = now;
+    if (WiFi.status() == WL_CONNECTED) {
+      connected = true;
+    } else {
+      Serial.println("\nConnection failed");
+      Serial.println("Trying to reconnect");
+    }
   }
-  Serial.print("IP: ");
-  Serial.println(WiFi.localIP().toString());
+  Serial.println("");
+  Serial.print("Conectado a la red WiFi. IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+
+void checkWifiConnection() {
+  if (WiFi.status() != WL_CONNECTED) {
+    initializeWifiConnection();
+  }
 }
 
 
 bool isConnectedToWiFi() {
-  return WiFi.status() == WL_CONNECTED;
+  if (WiFi.status() != WL_CONNECTED) {
+    return false;
+  }
+  return true;
 }
 
 
 String httpGETRequest(const String& serverName) {
   WiFiClientSecure client;
   HTTPClient http;
-  int retries = 3;
-  int retryDelay = 2000;
+  int retries = 5;
+  int retryDelay = 3000;
 
   // Because we are using a https connection
   client.setInsecure(); // Not verifying SSL/TLS certificate (not recommended)
