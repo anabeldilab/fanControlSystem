@@ -70,7 +70,7 @@ void handleFanControl() {
 
     Serial.print("Temperature: ");
     Serial.print(temperaturePercentage);
-    Serial.print(" °C, Price percentage: ");
+    Serial.print("%, Price percentage: ");
     Serial.print(pricePercentage);
     Serial.print("%, Fuzzy result: ");
     Serial.println(fanSpeed);
