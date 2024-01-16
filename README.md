@@ -30,17 +30,18 @@ These libraries are essential for the project's functionality and should be pres
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/fan-control-system.git
+   git clone https://github.com/anabeldilab/fanControlSystem.git
    ``` 
 2. Install the necessary libraries using Arduino IDE or manually place them in your project directory.
 3. Configure WiFi settings in networkHandler.h.
 4. Upload the code to your ESP32 device.
 
+Note 1: Perhaps the MQTT server is not available and one may need to be created.
+
 ## Configuration
 * Set the `ssid` and `password` in networkHandler.h to match your WiFi network.
-* Adjust sensor reading intervals and thresholds as needed in the configuration files.
 
 ## Usage
-After installation, the system will automatically start monitoring the environment and adjust the fan speed accordingly. Real-time data can be monitored through the cloud platform.
+After the installation is complete, the system will autonomously begin to monitor environmental conditions and adjust the fan speed as needed. This real-time data is accessible via a cloud platform for monitoring purposes. Additionally, to initiate control over the system, install any MQTT application. Once installed, you can publish to specific topics to manage system operations, and subscribe to these topics to keep track of sensor data and the current electricity prices in real time.
 
 
